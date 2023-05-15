@@ -27,9 +27,8 @@ setup(
     },
     url=url,
     entry_points={
-        'dtool_lookup_server.blueprints': [
-            'dtool_lookup_server_notification_plugin_elasticsearch=dtool_lookup_server_notification_plugin.elasticsearch:elastic_search_bp',
-            'dtool_lookup_server_notification_plugin_webhook=dtool_lookup_server_notification_plugin.webhook:webhook_bp',
+        'dtool_lookup_server.extension': [
+            'NotficationExtension=dtool_lookup_server_notification_plugin:NotificationExtension',
         ],
     },
     setup_requires=['setuptools_scm'],

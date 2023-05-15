@@ -1,16 +1,7 @@
-import ipaddress
-import json
 import logging
 import os
-import random
-import shutil
-import string
 import sys
-import tempfile
 
-import pytest
-
-import dtoolcore
 
 # Pytest does not add the working directory to the path so we do it here.
 _HERE = os.path.dirname(os.path.abspath(__file__))
@@ -130,6 +121,9 @@ def compare_marked_nested(A, B, marker):
     logger = logging.getLogger(__name__)
     if isinstance(marker, dict):
         for k, v in marker.items():
+            if not v:
+                continue
+
             if k not in A:
                 logger.error("{} not in A '{}'.".format(k, A))
                 return False
@@ -161,111 +155,3 @@ def compare_marked_nested(A, B, marker):
 
     # comparison either not desired or successfull for all elements
     return True
-
-
-def random_string(
-        size=9,
-        prefix="test_",
-        chars=string.ascii_uppercase + string.ascii_lowercase + string.digits
-):
-    return prefix + ''.join(random.choice(chars) for _ in range(size))
-
-
-@pytest.fixture
-def tmp_dir_fixture(request):
-    d = tempfile.mkdtemp()
-
-    @request.addfinalizer
-    def teardown():
-        shutil.rmtree(d)
-
-    return d
-
-
-@pytest.fixture
-def tmp_app_with_users(request):
-    from dtool_lookup_server import create_app, mongo, sql_db
-    from dtool_lookup_server.utils import (
-        register_users,
-        register_base_uri,
-        update_permissions,
-    )
-
-    tmp_mongo_db_name = random_string()
-
-    config = {
-        "SECRET_KEY": "secret",
-        "FLASK_ENV": "development",
-        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
-        "MONGO_URI": "mongodb://localhost:27017/{}".format(tmp_mongo_db_name),
-        "SQLALCHEMY_TRACK_MODIFICATIONS": False,
-        "JWT_ALGORITHM": "RS256",
-        "JWT_PUBLIC_KEY": JWT_PUBLIC_KEY,
-        "JWT_TOKEN_LOCATION": "headers",
-        "JWT_HEADER_NAME": "Authorization",
-        "JWT_HEADER_TYPE": "Bearer",
-    }
-
-    app = create_app(config)
-
-    # Ensure the sql database has been put into the context.
-    app.app_context().push()
-
-    # Populate the database.
-    sql_db.Model.metadata.create_all(sql_db.engine)
-
-    # Register some users.
-    register_users([
-        dict(username="snow-white", is_admin=True),
-        dict(username="grumpy"),
-        dict(username="sleepy"),
-    ])
-
-    base_uri = "s3://snow-white"
-    register_base_uri(base_uri)
-
-    permissions = {
-        "base_uri": base_uri,
-        "users_with_search_permissions": ["grumpy", "sleepy"],
-        "users_with_register_permissions": ["grumpy"]
-    }
-    update_permissions(permissions)
-
-    @request.addfinalizer
-    def teardown():
-        mongo.cx.drop_database(tmp_mongo_db_name)
-        sql_db.session.remove()
-
-    return app.test_client()
-
-
-@pytest.fixture
-def request_json(request):
-    fpath = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), 'data', 'mock_event.json')
-    with open(fpath, 'r') as f:
-        request_json = json.load(f)
-
-    return request_json
-
-
-@pytest.fixture
-def immuttable_dataset_uri(request):
-    fpath = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        'data', '1a1f9fad-8589-413e-9602-5bbd66bfe675')
-    uri = dtoolcore.utils.sanitise_uri(fpath)
-
-    return uri
-
-
-@pytest.fixture
-def access_restriction(request):
-    from dtool_lookup_server_notification_plugin.config import Config
-
-    backup = Config.ALLOW_ACCESS_FROM
-    Config.ALLOW_ACCESS_FROM = ipaddress.ip_network("1.2.3.4")
-
-    @request.addfinalizer
-    def teardown():
-        Config.ALLOW_ACCESS_FROM = backup
