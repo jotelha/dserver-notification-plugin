@@ -1,6 +1,16 @@
 Dtool Lookup Server Notification Plugin
 =======================================
 
+.. image:: https://img.shields.io/github/actions/workflow/status/livMatS/dtool-lookup-server-notification-plugin/test.yml?branch=main
+    :target: https://github.com/livMatS/dtool-lookup-server-notification-plugin/actions/workflows/test.yml
+    :alt: GitHub Workflow Status
+.. image:: https://img.shields.io/pypi/v/dtool-lookup-server-notification-plugin
+    :alt: PyPI
+    :target: https://pypi.org/project/dtool-lookup-server-notification-plugin/
+.. image:: https://img.shields.io/github/v/tag/livMatS/dtool-lookup-server-notification-plugin
+    :alt: GitHub tag (latest by date)
+    :target: https://github.com/livMatS/dtool-lookup-server-notification-plugin/tags
+
 - GitHub: https://github.com/livMatS/dtool-lookup-server-notification-plugin
 - PyPI: https://pypi.python.org/pypi/dtool-lookup-server-notification-plugin
 - Free software: MIT License
@@ -9,7 +19,6 @@ Dtool Lookup Server Notification Plugin
 Features
 --------
 
-- Listen to elastic search notifications from an S3-compatible storage backend
 - Listen to `S3 event notifications <https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-content-structure.html>`_
   from an S3-compatible storage backend
 
