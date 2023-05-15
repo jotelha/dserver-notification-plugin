@@ -1,17 +1,11 @@
 """Test the /webhook/notify blueprint route."""
-import ipaddress
-import json
-import os
-import shutil
 import urllib.parse
 
 import dtoolcore
 import yaml
 
-from dtoolcore import ProtoDataSet, generate_admin_metadata
 from dtoolcore import DataSet
 from dtoolcore.utils import generate_identifier, sanitise_uri
-from dtoolcore.storagebroker import DiskStorageBroker
 
 from dtool_lookup_server.utils import (
     get_readme_from_uri_by_user,
@@ -20,16 +14,6 @@ from dtool_lookup_server.utils import (
     update_permissions,
 )
 from dtool_lookup_server_notification_plugin import Config
-
-from . import (
-    access_restriction,
-    immuttable_dataset_uri,
-    tmp_app_with_users,
-    tmp_dir_fixture,
-    request_json,
-    TEST_SAMPLE_DATA
-) # NOQA
-
 
 def test_webhook_notify_route(tmp_app_with_users, tmp_dir_fixture,
                               request_json, immuttable_dataset_uri):  # NOQA
