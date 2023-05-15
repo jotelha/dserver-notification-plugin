@@ -489,6 +489,7 @@ def notify(path):
         logger.error(error_msg)
         abort(400, message=error_msg)
 
+    return jsonify(_process_event(event_name, event_data))
 
 class NotificationExtension(ExtensionABC):
 
