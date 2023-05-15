@@ -155,28 +155,6 @@ Next, enable event notifications for the desired bucket, i.e. for object creatio
     </NotificationConfiguration>
 
 
-Querying server plugin configuration
-------------------------------------
-
-The request
-
-.. code-block:: bash
-
-    $ curl -H "$HEADER" http://localhost:5000/elastic-search/config
-
-will return the current notification plugin configuration with all keys in lowercase
-
-.. code-block:: json
-
-    {
-      "allow_access_from": "0.0.0.0/0",
-      "bucket_to_base_uri": {"bucket": "s3://bucket"},
-      "version": "0.1.0"
-    }
-
-
-See ``dtool_lookup_server_dependency_graph_plugin.config.Config`` for more information.
-
 Testing
 -------
 
