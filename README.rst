@@ -1,18 +1,18 @@
 Dtool Lookup Server Notification Plugin
 =======================================
 
-.. image:: https://img.shields.io/github/actions/workflow/status/livMatS/dtool-lookup-server-notification-plugin/test.yml?branch=main
-    :target: https://github.com/livMatS/dtool-lookup-server-notification-plugin/actions/workflows/test.yml
+.. image:: https://img.shields.io/github/actions/workflow/status/livMatS/dserver-notification-plugin/test.yml?branch=main
+    :target: https://github.com/livMatS/dserver-notification-plugin/actions/workflows/test.yml
     :alt: GitHub Workflow Status
-.. image:: https://img.shields.io/pypi/v/dtool-lookup-server-notification-plugin
+.. image:: https://img.shields.io/pypi/v/dserver-notification-plugin
     :alt: PyPI
-    :target: https://pypi.org/project/dtool-lookup-server-notification-plugin/
-.. image:: https://img.shields.io/github/v/tag/livMatS/dtool-lookup-server-notification-plugin
+    :target: https://pypi.org/project/dserver-notification-plugin/
+.. image:: https://img.shields.io/github/v/tag/livMatS/dserver-notification-plugin
     :alt: GitHub tag (latest by date)
-    :target: https://github.com/livMatS/dtool-lookup-server-notification-plugin/tags
+    :target: https://github.com/livMatS/dserver-notification-plugin/tags
 
-- GitHub: https://github.com/livMatS/dtool-lookup-server-notification-plugin
-- PyPI: https://pypi.python.org/pypi/dtool-lookup-server-notification-plugin
+- GitHub: https://github.com/livMatS/dserver-notification-plugin
+- PyPI: https://pypi.python.org/pypi/dserver-notification-plugin
 - Free software: MIT License
 
 
@@ -34,11 +34,11 @@ However, if one has to manage more than a hundred datasets it can be helpful
 to have the datasets' metadata stored in a central server to enable one to
 quickly find datasets of interest.
 
-The `dtool-lookup-server <https://github.com/jic-dtool/dtool-lookup-server>`_
+The `dserver <https://github.com/jic-dtool/dserver>`_
 provides a web API for registering datasets' metadata
 and provides functionality to lookup, list and search for datasets.
 
-This plugin enables the dtool-lookup-server to listen to
+This plugin enables the dserver to listen to
 notifications for the registration and deregistration of datasets.
 
 
@@ -49,7 +49,7 @@ Install the dtool lookup server dependency graph plugin
 
 .. code-block:: bash
 
-    $ pip install dtool-lookup-server-notification-plugin
+    $ pip install dserver-notification-plugin
 
 Setup and configuration
 -----------------------
@@ -58,19 +58,19 @@ Configure plugin behavior
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The plugin needs to know how to convert a bucket name into a base URI. The
-environment variable ``DTOOL_LOOKUP_SERVER_NOTIFY_BUCKET_TO_BASE_URI`` is used
+environment variable ``DSERVER_NOTIFY_BUCKET_TO_BASE_URI`` is used
 to specify that conversion, e.g.::
 
-    DTOOL_LOOKUP_SERVER_NOTIFY_BUCKET_TO_BASE_URI={"bucket": "ecs://bucket"}
+    DSERVER_NOTIFY_BUCKET_TO_BASE_URI={"bucket": "ecs://bucket"}
 
 It is also advisable to limit access to the notification listener to a certain
 IP range. Use::
 
-    DTOOL_LOOKUP_SERVER_NOTIFY_ALLOW_ACCESS_FROM=192.168.0.0/16
+    DSERVER_NOTIFY_ALLOW_ACCESS_FROM=192.168.0.0/16
 
 to specify the allowed remote network. To specify a single IP, use::
 
-    DTOOL_LOOKUP_SERVER_NOTIFY_ALLOW_ACCESS_FROM=192.168.1.1/32
+    DSERVER_NOTIFY_ALLOW_ACCESS_FROM=192.168.1.1/32
 
 Configure elastic search integration in NetApp StorageGRID
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -105,8 +105,8 @@ Configure webhook in minio
 The `Publish Events to Webhook minio docs
 <https://docs.min.io/minio/baremetal/monitoring/bucket-notifications/publish-events-to-webhook.html>`_
 walks through the configuration for sending S3 event notifications to a webhook.
-Assuming a *dtool-lookup-server* with this plugin activated running at
-``http://dtool-lookup-server:5000``, and your minio instance with a
+Assuming a *dserver* with this plugin activated running at
+``http://dserver:5000``, and your minio instance with a
 bucket ``test-bucket`` at ``https://s3server:9000``, use
 
 .. code-block:: bash
@@ -115,7 +115,7 @@ bucket ``test-bucket`` at ``https://s3server:9000``, use
     mc config host add s3server http://s3server:9000 {admin_user} {admin_password}
 
     # Note that the endpoint must be reachable when configuring, otherwise minio will reject
-    mc admin config set s3server/ notify_webhook:dtool  endpoint="http://dtool-lookup-server:5000/webhook/notify"
+    mc admin config set s3server/ notify_webhook:dtool  endpoint="http://dserver:5000/webhook/notify"
     mc admin service restart s3server  # restart is necessary
 
     # Activate the actual notifications
@@ -126,7 +126,7 @@ to configure a webhook endpoint identified by ``dtool`` and activate ``put`` and
 Choose the parameters for ``--event "put,delete"`` from minio's
 `Supported Bucket Evenets <https://docs.min.io/minio/baremetal/reference/minio-mc/mc-event-add.html#mc-event-supported-events>`_.
 
-Note that minio is very strict on whom they talk to. If your `dtool-lookup-server`
+Note that minio is very strict on whom they talk to. If your `dserver`
 communicates via `https`, make sure that the server certificate uses `SANs
 <https://en.wikipedia.org/wiki/Subject_Alternative_Name>`_ and that the
 signing authority's root certificate is available to minio. See
@@ -147,8 +147,8 @@ communicate with an SNS endpoint, refer to the according sections of the
 and
 `configuring event notifications <https://docs.netapp.com/sgws-115/topic/com.netapp.doc.sg-tenant-admin/GUID-F2555EFF-C99B-4F83-9009-C8D59F9EA545.html>`_.
 
-In short, create an endpoint ```http://dtool-lookup-server:5000/webhook/notify```
-with a suitable URN, i.e. `urn:dtool-lookup-server:sns:region:notify:all`,
+In short, create an endpoint ```http://dserver:5000/webhook/notify```
+with a suitable URN, i.e. `urn:dserver:sns:region:notify:all`,
 where you may pick all fields freely except ``urn`` and ``sns``. 
 
 Next, enable event notifications for the desired bucket, i.e. for object creation events with a policy snippet like this:
@@ -158,7 +158,7 @@ Next, enable event notifications for the desired bucket, i.e. for object creatio
     <NotificationConfiguration>
       <TopicConfiguration>
         <Id>Object created</Id>
-        <Topic>urn:dtool-lookup-server:sns:region:notify:all</Topic>
+        <Topic>urn:dserver:sns:region:notify:all</Topic>
         <Event>s3:ObjectCreated:*</Event>
       </TopicConfiguration>
     </NotificationConfiguration>
