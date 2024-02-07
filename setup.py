@@ -8,12 +8,12 @@ def local_scheme(version):
     to be able to upload to Test PyPI"""
     return ""
 
-url = "https://github.com/IMTEK-Simulation/dtool-lookup-server-notification-plugin"
+url = "https://github.com/IMTEK-Simulation/dserver-notification-plugin"
 readme = open('README.rst').read()
 
 setup(
-    name="dtool-lookup-server-notification-plugin",
-    packages=["dtool_lookup_server_notification_plugin"],
+    name="dserver-notification-plugin",
+    packages=["dserver_notification_plugin"],
     description="dtool lookup server plugin for receiving elastic-search update notifications",
     long_description=readme,
     author="Lars Pastewka",
@@ -23,17 +23,17 @@ setup(
         "root": '.',
         "relative_to": __file__,
         "write_to": os.path.join(
-            "dtool_lookup_server_notification_plugin", "version.py"),
+            "dserver_notification_plugin", "version.py"),
     },
     url=url,
     entry_points={
-        'dtool_lookup_server.extension': [
-            'NotficationExtension=dtool_lookup_server_notification_plugin:NotificationExtension',
+        'dserver.extension': [
+            'NotficationExtension=dserver_notification_plugin:NotificationExtension',
         ],
     },
     setup_requires=['setuptools_scm'],
     install_requires=[
-        "dtool-lookup-server>=0.17.2",
+        "dserver>=0.17.2",
         "dtoolcore>=3.17.0",
         "dtool-s3>=0.13.0",
     ],

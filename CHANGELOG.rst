@@ -1,5 +1,5 @@
-Change log for dtool-lookup-server-notification-plugin
-======================================================
+Change log for dserver-notification-plugin
+==========================================
 
 
 0.2.2 (09Mar22)
@@ -16,7 +16,7 @@ Change log for dtool-lookup-server-notification-plugin
 0.2.0 (25Feb22)
 ---------------
 
-* dtool-lookup-server cpnfig/info route yields this plugin's config as well
+* dserver config/info route yields this plugin's config as well
 * Introduced webhook/notify route
 
 0.1.1 (23May21)
